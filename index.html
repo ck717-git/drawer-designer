@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多功能工具箱 - 抽屉分隔设计器</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1 class="logo"> 工具箱</h1>
+      <button class="sidebar-close" id="sidebarClose" aria-label="切换侧边栏">&times;</button>
+    </div>
+    <nav class="sidebar-nav">
+      <ul class="tool-list">
+        <li><a href="#" class="tool-item active" data-tool="drawer-designer"><span class="tool-icon">📐</span><span class="tool-name">抽屉分隔设计器</span></a></li>
+        <li><a href="#" class="tool-item disabled" data-tool="p1"><span class="tool-icon">🔲</span><span class="tool-name">待开发工具 1</span></a></li>
+        <li><a href="#" class="tool-item disabled" data-tool="p2"><span class="tool-icon">🔧</span><span class="tool-name">待开发工具 2</span></a></li>
+        <li><a href="#" class="tool-item disabled" data-tool="p3"><span class="tool-icon">📏</span><span class="tool-name">待开发工具 3</span></a></li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer"><p>v2.0.0 · 本地离线可用</p></div>
+  </aside>
+
+  <main class="main-content" id="mainContent">
+    <header class="top-bar">
+      <button class="menu-btn" id="menuBtn" aria-label="切换菜单">☰</button>
+      <h2 class="page-title" id="pageTitle">抽屉分隔设计器</h2>
+      <div class="top-bar-actions"></div>
+    </header>
+
+    <div class="tool-content" id="toolContent">
+      <section class="drawer-designer" id="drawerDesigner">
+        <!-- 抽屉尺寸 -->
+        <div class="input-section">
+          <h3 class="section-title">📏 抽屉尺寸</h3>
+          <div class="input-row">
+            <div class="input-group">
+              <label for="inputW">宽度 W (cm)</label>
+              <input type="number" id="inputW" min="1" max="200" step="0.1" value="60">
+            </div>
+            <div class="input-group">
+              <label for="inputD">前后进深 D (cm)</label>
+              <input type="number" id="inputD" min="1" max="200" step="0.1" value="40">
+            </div>
+            <div class="input-group">
+              <label for="inputH">柜体高度 H (cm)</label>
+              <input type="number" id="inputH" min="1" max="200" step="0.1" value="20">
+              <span class="input-hint">作为隔板默认深度</span>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="btnGenerate">生成抽屉轮廓</button>
+            <button class="btn btn-secondary" id="btnReset">重置</button>
+          </div>
+        </div>
+
+        <!-- 分隔操作 -->
+        <div class="toolbar-section">
+          <h3 class="section-title"> 分隔操作</h3>
+          <div class="toolbar-row">
+            <div class="toolbar-group">
+              <button class="btn btn-sm" id="btnAddHDivider">+ 横向隔板</button>
+              <button class="btn btn-sm" id="btnAddVDivider">+ 纵向隔板</button>
+              <button class="btn btn-sm" id="btnAddFreeDivider">+ 自由线段</button>
+            </div>
+          </div>
+          <div class="toolbar-row">
+            <div class="toolbar-group">
+              <span class="toolbar-label">横向均分：</span>
+              <button class="btn btn-sm btn-equal" data-dir="h" data-count="2">2</button>
+              <button class="btn btn-sm btn-equal" data-dir="h" data-count="3">3</button>
+              <button class="btn btn-sm btn-equal" data-dir="h" data-count="4">4</button>
+            </div>
+            <div class="toolbar-group">
+              <span class="toolbar-label">纵向均分：</span>
+              <button class="btn btn-sm btn-equal" data-dir="v" data-count="2">2</button>
+              <button class="btn btn-sm btn-equal" data-dir="v" data-count="3">3</button>
+              <button class="btn btn-sm btn-equal" data-dir="v" data-count="4">4</button>
+            </div>
+          </div>
+          <div class="toolbar-row">
+            <button class="btn btn-sm btn-undo" id="btnUndo">↩ 撤销</button>
+            <button class="btn btn-sm btn-danger" id="btnClearAll">🗑 清空隔板</button>
+            <button class="btn btn-sm btn-export" id="btnExportLayout">📷 导出布局图</button>
+            <button class="btn btn-sm btn-export" id="btnExportCut">📋 导出下料图</button>
+          </div>
+        </div>
+
+        <!-- 画布 + 属性面板两列布局 -->
+        <div class="canvas-props-layout">
+          <div class="canvas-section">
+            <h3 class="section-title">🎨 可视化画布 <span class="canvas-hint" id="canvasHint">（请先输入尺寸并点击生成）</span></h3>
+            <div class="canvas-wrapper" id="canvasWrapper">
+              <canvas id="mainCanvas"></canvas>
+            </div>
+          </div>
+          <!-- 选中隔板属性面板（右侧不遮挡画布） -->
+          <div class="sidebar-props" id="sidebarProps" style="display:none;">
+            <h3 class="section-title">🔧 隔板属性 <button class="btn btn-sm btn-danger" id="btnSidebarDelete" style="float:right;font-size:.75rem;">删除</button></h3>
+            <div class="sidebar-props-body" id="sidebarPropsBody"></div>
+          </div>
+        </div>
+
+        <!-- 隔板下料表 -->
+        <div class="detail-section" id="cuttingSection" style="display:none;">
+          <h3 class="section-title">🪚 隔板下料尺寸表</h3>
+          <div class="table-wrapper">
+            <table class="detail-table" id="cuttingTable">
+              <thead><tr><th>序号</th><th>类型</th><th>长度 (cm)</th><th>宽度 (cm)</th><th>厚度 (cm)</th><th>斜切</th><th>数量</th></tr></thead>
+              <tbody id="cuttingBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 教程 -->
+        <div class="tutorial-section">
+          <h3 class="section-title">📖 操作教程</h3>
+          <ul class="tutorial-list">
+            <li>输入抽屉尺寸，点击「生成抽屉轮廓」开始设计。</li>
+            <li>添加横向/纵向隔板，或使用「自由线段」绘制任意角度隔断。</li>
+            <li>点击隔板可选中，显示属性面板：可调整模式、长度、坐标、厚度、深度。</li>
+            <li>隔板端点不能超出抽屉轮廓，拖拽时自动约束在轮廓内。</li>
+            <li>自由线段同样起到有效隔断作用，并参与下料尺寸计算。</li>
+            <li>隔板与轮廓非垂直接触时，下料表会标注斜切角度。</li>
+            <li>快捷键 <kbd>Ctrl+Z</kbd> 撤销，<kbd>Delete</kbd> 删除选中元素。</li>
+            <li>导出布局图（干净无标记）和下料尺寸图（含标注）。</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/drawer-designer.js"></script>
+</body>
+</html>
