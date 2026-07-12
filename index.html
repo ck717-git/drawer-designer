@@ -3,40 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>多功能工具箱 - 抽屉分隔设计器</title>
+  <title>抽屉分隔设计器 · Drawer Studio</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="single-tool">
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <h1 class="logo"> 工具箱</h1>
-      <button class="sidebar-close" id="sidebarClose" aria-label="切换侧边栏">&times;</button>
+      <h1 class="logo"><span class="logo-mark" aria-hidden="true"></span><span>Drawer Studio</span></h1>
+      <button class="sidebar-close" id="sidebarClose" aria-label="切换侧边栏"></button>
     </div>
     <nav class="sidebar-nav">
       <ul class="tool-list">
-        <li><a href="#" class="tool-item active" data-tool="drawer-designer"><span class="tool-icon">📐</span><span class="tool-name">抽屉分隔设计器</span></a></li>
-        <li><a href="#" class="tool-item disabled" data-tool="p1"><span class="tool-icon">🔲</span><span class="tool-name">待开发工具 1</span></a></li>
-        <li><a href="#" class="tool-item disabled" data-tool="p2"><span class="tool-icon">🔧</span><span class="tool-name">待开发工具 2</span></a></li>
-        <li><a href="#" class="tool-item disabled" data-tool="p3"><span class="tool-icon">📏</span><span class="tool-name">待开发工具 3</span></a></li>
+        <li><a href="#" class="tool-item active" data-tool="drawer-designer"><span class="tool-icon icon-drawer" aria-hidden="true"></span><span class="tool-name">抽屉分隔设计器</span></a></li>
+        <li><a href="#" class="tool-item disabled" data-tool="p1"><span class="tool-icon icon-grid" aria-hidden="true"></span><span class="tool-name">模块工具</span></a></li>
+        <li><a href="#" class="tool-item disabled" data-tool="p2"><span class="tool-icon icon-caliper" aria-hidden="true"></span><span class="tool-name">尺寸校验</span></a></li>
+        <li><a href="#" class="tool-item disabled" data-tool="p3"><span class="tool-icon icon-sheet" aria-hidden="true"></span><span class="tool-name">下料归档</span></a></li>
       </ul>
     </nav>
-    <div class="sidebar-footer"><p>v2.0.0 · 本地离线可用</p></div>
+    <div class="sidebar-footer"><p>v2.1 · 本地离线可用</p></div>
   </aside>
 
   <main class="main-content" id="mainContent">
     <header class="top-bar">
-      <button class="menu-btn" id="menuBtn" aria-label="切换菜单">☰</button>
+      <button class="menu-btn" id="menuBtn" aria-label="切换菜单"><span></span></button>
       <h2 class="page-title" id="pageTitle">抽屉分隔设计器</h2>
-      <div class="top-bar-actions"></div>
+      <div class="top-bar-actions"><span class="status-dot"></span><span>离线可用</span></div>
     </header>
 
     <div class="tool-content" id="toolContent">
       <section class="drawer-designer" id="drawerDesigner">
+        <div class="designer-hero">
+          <div>
+            <p class="eyebrow">Drawer divider planner</p>
+            <h2>把抽屉隔板设计得更清楚、更好下料</h2>
+            <p class="hero-copy">输入尺寸后生成比例画布，添加隔板即可同步得到下料尺寸。界面已按木作工作台的使用场景重新整理。</p>
+          </div>
+          <div class="hero-metrics" aria-label="功能摘要">
+            <span>可视化布局</span>
+            <span>实时下料表</span>
+            <span>斜切提示</span>
+          </div>
+        </div>
+
         <!-- 抽屉尺寸 -->
         <div class="input-section">
-          <h3 class="section-title">📏 抽屉尺寸</h3>
+          <h3 class="section-title"><span class="section-icon icon-measure" aria-hidden="true"></span>抽屉尺寸</h3>
           <div class="input-row">
             <div class="input-group">
               <label for="inputW">宽度 W (cm)</label>
@@ -60,7 +73,7 @@
 
         <!-- 分隔操作 -->
         <div class="toolbar-section">
-          <h3 class="section-title"> 分隔操作</h3>
+          <h3 class="section-title"><span class="section-icon icon-split" aria-hidden="true"></span>分隔操作</h3>
           <div class="toolbar-row">
             <div class="toolbar-group">
               <button class="btn btn-sm" id="btnAddHDivider">+ 横向隔板</button>
@@ -83,31 +96,31 @@
             </div>
           </div>
           <div class="toolbar-row">
-            <button class="btn btn-sm btn-undo" id="btnUndo">↩ 撤销</button>
-            <button class="btn btn-sm btn-danger" id="btnClearAll">🗑 清空隔板</button>
-            <button class="btn btn-sm btn-export" id="btnExportLayout">📷 导出布局图</button>
-            <button class="btn btn-sm btn-export" id="btnExportCut">📋 导出下料图</button>
+            <button class="btn btn-sm btn-undo" id="btnUndo">撤销</button>
+            <button class="btn btn-sm btn-danger" id="btnClearAll">清空隔板</button>
+            <button class="btn btn-sm btn-export" id="btnExportLayout">导出布局图</button>
+            <button class="btn btn-sm btn-export" id="btnExportCut">导出下料图</button>
           </div>
         </div>
 
         <!-- 画布 + 属性面板两列布局 -->
         <div class="canvas-props-layout">
           <div class="canvas-section">
-            <h3 class="section-title">🎨 可视化画布 <span class="canvas-hint" id="canvasHint">（请先输入尺寸并点击生成）</span></h3>
+            <h3 class="section-title"><span class="section-icon icon-canvas" aria-hidden="true"></span>可视化画布 <span class="canvas-hint" id="canvasHint">（请先输入尺寸并点击生成）</span></h3>
             <div class="canvas-wrapper" id="canvasWrapper">
               <canvas id="mainCanvas"></canvas>
             </div>
           </div>
           <!-- 选中隔板属性面板（右侧不遮挡画布） -->
           <div class="sidebar-props" id="sidebarProps" style="display:none;">
-            <h3 class="section-title">🔧 隔板属性 <button class="btn btn-sm btn-danger" id="btnSidebarDelete" style="float:right;font-size:.75rem;">删除</button></h3>
+            <h3 class="section-title"><span class="section-icon icon-control" aria-hidden="true"></span>隔板属性 <button class="btn btn-sm btn-danger" id="btnSidebarDelete" style="float:right;font-size:.75rem;">删除</button></h3>
             <div class="sidebar-props-body" id="sidebarPropsBody"></div>
           </div>
         </div>
 
         <!-- 隔板下料表 -->
         <div class="detail-section" id="cuttingSection" style="display:none;">
-          <h3 class="section-title">🪚 隔板下料尺寸表</h3>
+          <h3 class="section-title"><span class="section-icon icon-table" aria-hidden="true"></span>隔板下料尺寸表</h3>
           <div class="table-wrapper">
             <table class="detail-table" id="cuttingTable">
               <thead><tr><th>序号</th><th>类型</th><th>长度 (cm)</th><th>宽度 (cm)</th><th>厚度 (cm)</th><th>斜切</th><th>数量</th></tr></thead>
@@ -118,7 +131,7 @@
 
         <!-- 教程 -->
         <div class="tutorial-section">
-          <h3 class="section-title">📖 操作教程</h3>
+          <h3 class="section-title"><span class="section-icon icon-guide" aria-hidden="true"></span>操作教程</h3>
           <ul class="tutorial-list">
             <li>输入抽屉尺寸，点击「生成抽屉轮廓」开始设计。</li>
             <li>添加横向/纵向隔板，或使用「自由线段」绘制任意角度隔断。</li>
