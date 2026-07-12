@@ -27,6 +27,7 @@
   var initialized=false, nextId=1;
   var deleteBtn=null;
   var ENDPOINT_R=5, HIT_R=10;
+  var DRAG_THRESHOLD=4;
   var spEls={}; // sidebar props cached elements
 
   /* ===== 工具函数 ===== */
@@ -237,6 +238,10 @@
     var cy=e.touches?e.touches[0].clientY:e.clientY;
     return {x:(cx-r.left)*sx, y:(cy-r.top)*sy};
   }
+  function getClientPoint(e){
+    var p=e.touches?e.touches[0]:e;
+    return {x:p.clientX,y:p.clientY};
+  }
 
   /* ===== 覆盖层（仅删除按钮在画布上） ===== */
   function removeOverlay(){
@@ -366,20 +371,23 @@
     if(!initialized)return;
     e.preventDefault();
     var pos=getPos(e);
+    var client=getClientPoint(e);
     var hit=hitTest(pos.x,pos.y);
     if(hit){
+      var sameSelected=selected&&selected.type===hit.type&&selected.index===hit.index;
       selected=hit;
       saveUndo();
       if(hit.type==='divider'){
         var d=dividers[hit.index];
-        if(hit.part==='start') dragging={type:'divider',index:hit.index,part:'start'};
-        else if(hit.part==='end') dragging={type:'divider',index:hit.index,part:'end'};
-        else dragging={type:'divider',index:hit.index,part:'body',ox:d.x1,oy:d.y1,ox2:d.x2,oy2:d.y2,dx:pos.x,dy:pos.y};
+        var lockFirstSelect=!sameSelected;
+        if(hit.part==='start') dragging={type:'divider',index:hit.index,part:'start',active:false,startClientX:client.x,startClientY:client.y,lockUntilMouseup:lockFirstSelect};
+        else if(hit.part==='end') dragging={type:'divider',index:hit.index,part:'end',active:false,startClientX:client.x,startClientY:client.y,lockUntilMouseup:lockFirstSelect};
+        else dragging={type:'divider',index:hit.index,part:'body',ox:d.x1,oy:d.y1,ox2:d.x2,oy2:d.y2,dx:pos.x,dy:pos.y,active:false,startClientX:client.x,startClientY:client.y,lockUntilMouseup:lockFirstSelect};
       } else if(hit.type==='drawer'&&hit.index>=0){
         var v=drawer.vertices[hit.index];
-        dragging={type:'drawer',index:hit.index,ox:v.x,oy:v.y};
+        dragging={type:'drawer',index:hit.index,ox:v.x,oy:v.y,active:false,startClientX:client.x,startClientY:client.y};
       } else {
-        dragging={type:'drawer',index:-1};
+        dragging={type:'drawer',index:-1,active:false,startClientX:client.x,startClientY:client.y};
       }
       createDeleteBtn();
       if(hit.type==='divider') showSidebarProps();
@@ -391,8 +399,27 @@
 
   function onMove(e){
     if(!dragging||!initialized)return;
+    if(dragging.lockUntilMouseup)return;
+    if(e.type&&e.type.indexOf('mouse')===0&&e.buttons===0)return;
     e.preventDefault();
     var pos=getPos(e);
+    var client=getClientPoint(e);
+    if(!dragging.active){
+      var moved=Math.sqrt(Math.pow(client.x-dragging.startClientX,2)+Math.pow(client.y-dragging.startClientY,2));
+      if(moved<DRAG_THRESHOLD)return;
+      dragging.active=true;
+      pos=getPos(e);
+      if(dragging.type==='divider'){
+        var startDiv=dividers[dragging.index];
+        if(startDiv&&dragging.part==='body'){
+          dragging.ox=startDiv.x1;dragging.oy=startDiv.y1;dragging.ox2=startDiv.x2;dragging.oy2=startDiv.y2;
+          dragging.dx=pos.x;dragging.dy=pos.y;
+        }
+      } else if(dragging.type==='drawer'&&dragging.index>=0){
+        var startVertex=drawer.vertices[dragging.index];
+        if(startVertex){dragging.ox=startVertex.x;dragging.oy=startVertex.y;}
+      }
+    }
     var cmx=p2cx(pos.x), cmy=p2cy(pos.y);
 
     if(dragging.type==='divider'){
